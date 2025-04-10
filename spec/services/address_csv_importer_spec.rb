@@ -1,7 +1,6 @@
 require "rails_helper"
-require_relative "../../app/services/address_csv_importer"
 
-RSpec.describe AddressCSVImporter do
+RSpec.describe AddressCsvImporter do
   describe "#import" do
     let(:csv_text) do
       <<~CSV
@@ -21,7 +20,7 @@ RSpec.describe AddressCSVImporter do
       csv_text_file.unlink
     end
 
-    subject { AddressCSVImporter.new(csv_text_file.path).import }
+    subject { AddressCsvImporter.new(csv_text_file.path).import }
 
     context "Unable to save address" do
       before(:each) do

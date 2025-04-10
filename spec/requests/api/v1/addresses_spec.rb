@@ -1,5 +1,4 @@
 require "rails_helper"
-require_relative "../../../../app/services/address_csv_importer"
 
 RSpec.describe "Api::V1::Addresses", type: :request do
   describe "GET /index" do
@@ -17,7 +16,7 @@ RSpec.describe "Api::V1::Addresses", type: :request do
 
   describe "POST /create" do
     before(:each) do
-      allow_any_instance_of(AddressCSVImporter).to receive(:import).and_return(import_successful)
+      allow_any_instance_of(AddressCsvImporter).to receive(:import).and_return(import_successful)
     end
 
     let(:import_successful) { true }

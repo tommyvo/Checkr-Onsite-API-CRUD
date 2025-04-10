@@ -1,6 +1,6 @@
 require_relative "base_csv_importer"
 
-class AddressCSVImporter < BaseCSVImporter
+class AddressCsvImporter < BaseCsvImporter
   private
 
   def process_csv(row)

@@ -1,4 +1,4 @@
-class BaseCSVImporter
+class BaseCsvImporter
   attr_reader :csv_file
 
   def initialize(csv_file)
