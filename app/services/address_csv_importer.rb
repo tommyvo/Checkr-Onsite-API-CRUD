@@ -1,5 +1,3 @@
-require_relative "base_csv_importer"
-
 class AddressCsvImporter < BaseCsvImporter
   private
 
