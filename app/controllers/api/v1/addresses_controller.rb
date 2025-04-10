@@ -1,3 +1,5 @@
+require_relative "../../../services/address_csv_importer"
+
 class Api::V1::AddressesController < ApplicationController
   before_action :load_address, only: %i[update destroy]
 
@@ -9,8 +11,13 @@ class Api::V1::AddressesController < ApplicationController
 
   # POST /api/v1/addresses
   def create
-    # TODO: implement this
-    render json: { error: "NOT IMPLEMENTED" }, status: 400
+    csv_importer = AddressCSVImporter.new(params[:file])
+
+    if csv_importer.import
+      render json: { message: "CSV processed" }, status: 200
+    else
+      render json: { error: "Unable to process CSV file!" }, status: 500
+    end
   end
 
   # TODO: make this accept a JSON payload, instead of just the parameters

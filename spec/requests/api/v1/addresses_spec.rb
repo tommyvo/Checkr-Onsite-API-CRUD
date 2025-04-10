@@ -1,4 +1,5 @@
-require 'rails_helper'
+require "rails_helper"
+require_relative "../../../../app/services/address_csv_importer"
 
 RSpec.describe "Api::V1::Addresses", type: :request do
   describe "GET /index" do
@@ -15,7 +16,31 @@ RSpec.describe "Api::V1::Addresses", type: :request do
   end
 
   describe "POST /create" do
-    pending "creates addresses from CSV"
+    before(:each) do
+      allow_any_instance_of(AddressCSVImporter).to receive(:import).and_return(import_successful)
+    end
+
+    let(:import_successful) { true }
+    let(:csv_file_name) { "addresses.csv" }
+
+    context "unable to import CSV" do
+      let(:import_successful) { false }
+
+      it "does not create new Address records" do
+        prev_address_count = Address.count
+
+        post "/api/v1/addresses", params: { file: csv_file_name }
+
+        expect(Address.count).to eq prev_address_count
+        expect(response).to have_http_status(:error)
+      end
+    end
+
+    it "successfully creates addresses from CSV" do
+      post "/api/v1/addresses", params: { file: csv_file_name }
+
+      expect(response).to have_http_status(:success)
+    end
   end
 
   describe "PUT /update" do
