@@ -31,7 +31,7 @@ RSpec.describe "Api::V1::Addresses", type: :request do
         post "/api/v1/addresses", params: { file: csv_file_name }
 
         expect(Address.count).to eq prev_address_count
-        expect(response).to have_http_status(:error)
+        expect(response).to have_http_status(:unprocessable_entity)
       end
     end
 

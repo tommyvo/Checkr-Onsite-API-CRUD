@@ -11,12 +11,12 @@ module Api
 
       # POST /api/v1/addresses
       def create
-        csv_importer = AddressCsvImporter.new(params[:file])
+        csv_importer = AddressCsvImporter.new(import_file_param)
 
         if csv_importer.import
-          render json: { message: "CSV processed" }, status: 200
+          render json: { message: "CSV processed" }, status: :ok
         else
-          render json: { error: "Unable to process CSV file!" }, status: 500
+          render json: { error: "Unable to process CSV file!" }, status: :unprocessable_entity
         end
       end
 
@@ -24,18 +24,18 @@ module Api
       # PUT /api/v1/addresses/:id
       def update
         if @address.update(address_params)
-          render json: { message: "Address updated successfully" }, status: 200
+          render json: { message: "Address updated successfully" }, status: :ok
         else
-          render json: { error: "Unable to update address: #{@address.errors.full_messages}" }, status: 400
+          render json: { error: "Unable to update address: #{@address.errors.full_messages}" }, status: :bad_request
         end
       end
 
       # DELETE /api/v1/addresses/:id
       def destroy
         if @address.destroy
-          render json: { message: "Address destroyed successfully" }, status: 200
+          render json: { message: "Address destroyed successfully" }, status: :ok
         else
-          render json: { error: "Unable to destroy address: #{@address.errors.full_messages}" }, status: 400
+          render json: { error: "Unable to destroy address: #{@address.errors.full_messages}" }, status: :bad_request
         end
       end
 
@@ -47,10 +47,11 @@ module Api
 
       def load_address
         @address = Address.find_by(id: params[:id])
+        return render json: { error: "Address not found" }, status: :not_found unless @address
+      end
 
-        if @address.nil?
-          render json: { error: "Address not found" }, status: 404
-        end
+      def import_file_param
+        params.require(:file)
       end
     end
   end
