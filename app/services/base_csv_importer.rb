@@ -6,11 +6,11 @@ class BaseCsvImporter
   end
 
   def import
-    opened_file = File.open(csv_file)
-
     ActiveRecord::Base.transaction do
-      CSV.foreach(opened_file, headers: true) do |row|
-        process_csv(row)
+      File.open(csv_file) do |opened_file|
+        CSV.foreach(opened_file, headers: true) do |row|
+          process_csv(row)
+        end
       end
     rescue ActiveRecord::RecordInvalid => e
       Rails.logger.error(e.message)
