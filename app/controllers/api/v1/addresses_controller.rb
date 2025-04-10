@@ -11,13 +11,12 @@ module Api
 
       # POST /api/v1/addresses
       def create
-        csv_importer = AddressCsvImporter.new(import_file_param)
+        csv_file = CsvFile.create
+        csv_file.csv_file.attach(params[:file])
 
-        if csv_importer.import
-          render json: { message: "CSV processed" }, status: :ok
-        else
-          render json: { error: "Unable to process CSV file!" }, status: :unprocessable_entity
-        end
+        AddressCsvImportJob.perform_later csv_file.id
+
+        render json: { message: "CSV processed" }, status: :ok
       end
 
       # TODO: make this accept a JSON payload, instead of just the parameters

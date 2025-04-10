@@ -15,28 +15,25 @@ RSpec.describe "Api::V1::Addresses", type: :request do
   end
 
   describe "POST /create" do
-    before(:each) do
-      allow_any_instance_of(AddressCsvImporter).to receive(:import).and_return(import_successful)
-    end
-
     let(:import_successful) { true }
-    let(:csv_file_name) { "addresses.csv" }
+    let(:csv_file) do
+      fixture_file_upload(Rails.root.join("spec/fixtures/files/addresses.csv"), "text/csv")
+    end
 
     context "unable to import CSV" do
       let(:import_successful) { false }
 
-      it "does not create new Address records" do
-        prev_address_count = Address.count
+      it "enqueues the import job" do
+        ActiveJob::Base.queue_adapter = :test
 
-        post "/api/v1/addresses", params: { file: csv_file_name }
-
-        expect(Address.count).to eq prev_address_count
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect {
+          post "/api/v1/addresses", params: { file: csv_file }
+        }.to have_enqueued_job(AddressCsvImportJob)
       end
     end
 
     it "successfully creates addresses from CSV" do
-      post "/api/v1/addresses", params: { file: csv_file_name }
+      post "/api/v1/addresses", params: { file: csv_file }
 
       expect(response).to have_http_status(:success)
     end
