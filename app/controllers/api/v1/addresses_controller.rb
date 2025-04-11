@@ -47,7 +47,7 @@ module Api
 
       def load_address
         @address = Address.find_by(id: params[:id])
-        return render json: { error: "Address not found" }, status: :not_found unless @address
+        render json: { error: "Address not found" }, status: :not_found unless @address
       end
 
       def import_file_param
